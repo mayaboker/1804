@@ -1,0 +1,1 @@
+docker run --rm -it --privileged --network host --env="DISPLAY" --env="QT_X11_NO_MITSHM=1" -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" -v /dev:/dev -v /home/user/18.04:/out ubuntu:18.04 bash
