@@ -12,7 +12,7 @@ pyzmq==18.1.1
 msgpack==1.0.2
 dataclasses==0.8
 csv-logger
-
+dronekit
 astunparse==1.6.3
 cached-property==1.5.2
 click==8.0.4
@@ -40,8 +40,3 @@ zipp==3.6.0
 Pygments==2.11.0
 mkdocs-material-extensions==1.0.3
 mkdocs-material==8.2.1
-
-
-A
-
-
