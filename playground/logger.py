@@ -20,9 +20,24 @@ class ColoredFormatter(logging.Formatter):
         color = self.COLORS.get(record.levelno, self.RESET)
         message = super().format(record)
         return f"{color}{message}{self.RESET}"
-    
-def setup_logging(app_name:str, level=logging.DEBUG):
-    log_format=logging.Formatter("{levelname: <8}:{asctime}:{name:<10}({lineno}): {message}", datefmt="%Y-%m-%d %H:%M:%S", style="{")
+
+def setup_logging(app_name, level=logging.DEBUG, module_levels=None):
+    """Configure root logging and optional per-module log levels.
+
+    Args:
+        app_name (str): Base name for the log file (<app_name>.log).
+        level (int): Default/root log level.
+        module_levels (dict): Optional logger level overrides, e.g.
+            {"orchestrator": logging.DEBUG, "zmq_pub_sub": logging.INFO}
+    """
+    if module_levels is None:
+        module_levels = {}
+
+    log_format = logging.Formatter(
+        "{levelname: <8}:{asctime}:{name:<18}({lineno}): {message}",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        style="{",
+    )
     
     root_logger = logging.getLogger()
     if root_logger.hasHandlers():
@@ -30,14 +45,21 @@ def setup_logging(app_name:str, level=logging.DEBUG):
     root_logger.setLevel(level)
     
     console_handler = logging.StreamHandler(sys.stdout)
-    formatter = ColoredFormatter("{levelname: <8}:{asctime}:{name:<10}({lineno}): {message}", datefmt="%Y-%m-%d %H:%M:%S", style="{")   
+    formatter = ColoredFormatter(
+        "{levelname: <8}:{asctime}:{name:<18}({lineno}): {message}",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        style="{",
+    )
     console_handler.setFormatter(formatter)
     root_logger.addHandler(console_handler)
 
     log_file_path = Path(f"{app_name}.log")
     file_handler = RotatingFileHandler(str(log_file_path), maxBytes=5*1024*1024, backupCount=5)
     file_handler.setFormatter(log_format)
-    root_logger.addHandler(file_handler)    
+    root_logger.addHandler(file_handler)
+
+    for logger_name, logger_level in module_levels.items():
+        logging.getLogger(logger_name).setLevel(logger_level)
 
     logging.info(
         "Logging initialized for {} at level {} - Writing to {}".format(

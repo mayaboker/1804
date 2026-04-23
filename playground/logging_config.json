@@ -1,0 +1,8 @@
+{
+  "app_name": "my_project",
+  "root_level": "INFO",
+  "module_levels": {
+    "orchestrator": "INFO",
+    "zmq_pub_sub": "INFO"
+  }
+}
